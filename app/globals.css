@@ -2,14 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap");
 
 html {
   direction: rtl;
 }
 
 body {
-  background-color: #0d0d0d;
+  background-color: #0a0908;
   color: #ede0c8;
   font-family: "Vazirmatn", sans-serif;
+}
+
+.font-nastaliq {
+  font-family: "Noto Nastaliq Urdu", serif;
+}
+
+@keyframes owl-blink {
+  0%, 100% { transform: scaleY(1); opacity: 1; }
+  50% { transform: scaleY(0.15); opacity: 0.6; }
+}
+
+.owl-eye {
+  animation: owl-blink 1.6s ease-in-out infinite;
+}
+
+.owl-eye:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .owl-eye {
+    animation: none;
+  }
 }
