@@ -18,25 +18,49 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "متن نامعتبر است." }, { status: 400 });
     }
 
+    // محدودیت طول متن (اختیاری اما مفید)
+    if (text.length > 5000) {
+      return NextResponse.json({ error: "متن طولانی است (حداکثر ۵۰۰۰ کاراکتر)." }, { status: 400 });
+    }
+
     const tts = new MsEdgeTTS();
     await tts.setMetadata(
       "fa-IR-FaridNeural",
       OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
     );
 
-    const { audioStream } = await tts.toStream(text);
-
+    // دریافت جریان صوتی
+    const result = await tts.toStream(text);
+    
+    // جمع‌آوری تکه‌های صوتی
     const chunks: Buffer[] = [];
-    for await (const chunk of audioStream) {
-      chunks.push(chunk as Buffer);
+    for await (const chunk of result.audioStream) {
+      chunks.push(Buffer.from(chunk));
     }
     const audioBuffer = Buffer.concat(chunks);
 
+    // بازگشت پاسخ صوتی
     return new NextResponse(audioBuffer, {
-      headers: { "Content-Type": "audio/mpeg" },
+      status: 200,
+      headers: {
+        "Content-Type": "audio/mpeg",
+        "Content-Length": audioBuffer.length.toString(),
+      },
     });
   } catch (error) {
     console.error("TTS error:", error);
-    return NextResponse.json({ error: "خطا در تولید صدا." }, { status: 500 });
+    
+    // خطای خاص برای تشخیص بهتر
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: `خطا در تولید صدا: ${error.message}` },
+        { status: 500 }
+      );
+    }
+    
+    return NextResponse.json(
+      { error: "خطا در تولید صدا." },
+      { status: 500 }
+    );
   }
 }
