@@ -4,13 +4,29 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap");
 
+:root {
+  --bg: #f7f1e3;
+  --bg-elevated: #ede0c8;
+  --text: #2a1f13;
+  --text-muted: rgba(42, 31, 19, 0.55);
+  --border: rgba(138, 102, 54, 0.3);
+}
+
+.dark {
+  --bg: #0a0908;
+  --bg-elevated: #16140f;
+  --text: #ede0c8;
+  --text-muted: rgba(237, 224, 200, 0.5);
+  --border: rgba(138, 102, 54, 0.25);
+}
+
 html {
   direction: rtl;
 }
 
 body {
-  background-color: #0a0908;
-  color: #ede0c8;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: "Vazirmatn", sans-serif;
 }
 
