@@ -5,7 +5,7 @@ import { buildHedayatMessages, type ChatMessage } from "@/lib/hedayat-persona";
 
 // این مدل رایگان OpenRouter‌ه؛ اگه در دسترس نبود از openrouter.ai/models
 // یه مدل رایگان دیگه (تگ free) جایگزینش کن
-const OPENROUTER_MODEL = "deepseek/deepseek-chat-v3-0324:free";
+const OPENROUTER_MODEL = "openrouter/free";
 
 export async function POST(req: NextRequest) {
   try {
