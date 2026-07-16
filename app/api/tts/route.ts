@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,47 +18,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "متن نامعتبر است." }, { status: 400 });
     }
 
-    const voiceId = process.env.ELEVENLABS_VOICE_ID;
-    const apiKey = process.env.ELEVENLABS_API_KEY;
-
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "xi-api-key": apiKey!,
-        },
-        body: JSON.stringify({
-          text,
-          model_id: "eleven_multilingual_v2",
-          voice_settings: {
-            stability: 0.55,
-            similarity_boost: 0.8,
-            style: 0.3,
-          },
-        }),
-      }
+    const tts = new MsEdgeTTS();
+    await tts.setMetadata(
+      "fa-IR-FaridNeural",
+      OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
     );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("ElevenLabs error:", errorText);
-      return NextResponse.json(
-        { error: "خطا در تولید صدا." },
-        { status: 502 }
-      );
-    }
+    const { audioStream } = await tts.toStream(text);
 
-    const audioBuffer = await response.arrayBuffer();
+    const chunks: Buffer[] = [];
+    for await (const chunk of audioStream) {
+      chunks.push(chunk as Buffer);
+    }
+    const audioBuffer = Buffer.concat(chunks);
 
     return new NextResponse(audioBuffer, {
-      headers: {
-        "Content-Type": "audio/mpeg",
-      },
+      headers: { "Content-Type": "audio/mpeg" },
     });
   } catch (error) {
-    console.error("TTS API error:", error);
-    return NextResponse.json({ error: "خطای غیرمنتظره." }, { status: 500 });
+    console.error("TTS error:", error);
+    return NextResponse.json({ error: "خطا در تولید صدا." }, { status: 500 });
   }
 }
