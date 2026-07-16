@@ -50,11 +50,32 @@ export default function ChatWindow() {
         setError(data.error || "خطایی رخ داد.");
       } else {
         setMessages([...nextMessages, { role: "assistant", content: data.reply }]);
+        playVoice(data.reply);
       }
     } catch {
       setError("ارتباط با سرور برقرار نشد.");
     } finally {
       setIsThinking(false);
+    }
+  }
+
+  async function playVoice(text: string) {
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) return;
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.play().catch(() => {
+        // پخش خودکار ممکنه توسط مرورگر بلاک بشه تا کاربر یه‌بار تعامل کنه؛ بی‌خطر است
+      });
+    } catch {
+      // خطای شبکه در پخش صدا نباید جلوی چت متنی رو بگیره
     }
   }
 
