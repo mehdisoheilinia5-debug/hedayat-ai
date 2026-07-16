@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import AppHeader from "@/components/AppHeader";
 
 const INTRO_NOTE =
   "این یک بازسازی هنری بر پایه‌ی آثار و زندگی‌نامه‌ی صادق هدایت است، نه ادعای هویت واقعی او.";
@@ -15,14 +14,21 @@ interface ChatMessage {
 }
 
 export default function VoiceInterface() {
-  const router = useRouter();
-  const supabase = createClient();
-
   const [state, setState] = useState<VoiceState>("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const historyRef = useRef<ChatMessage[]>([]);
   const recognitionRef = useRef<any>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const resetToIdle = useCallback(() => {
+    abortRef.current?.abort();
+    audioRef.current?.pause();
+    audioRef.current = null;
+    setErrorMsg(null);
+    setState("idle");
+  }, []);
 
   const handleMicPress = useCallback(() => {
     if (state === "listening") {
@@ -81,11 +87,16 @@ export default function VoiceInterface() {
     ];
     historyRef.current = nextHistory;
 
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const timeout = setTimeout(() => controller.abort(), 60000);
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: nextHistory }),
+        signal: controller.signal,
       });
       const data = await res.json();
 
@@ -101,18 +112,26 @@ export default function VoiceInterface() {
       ];
 
       await playVoice(data.reply);
-    } catch {
-      setErrorMsg("ارتباط با سرور برقرار نشد.");
+    } catch (e: any) {
+      if (e?.name === "AbortError") return; // کاربر لغو کرد
+      setErrorMsg("ارتباط با سرور برقرار نشد یا زمان زیادی طول کشید.");
       setState("error");
+    } finally {
+      clearTimeout(timeout);
     }
   }
 
   async function playVoice(text: string) {
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const timeout = setTimeout(() => controller.abort(), 60000);
+
     try {
       const res = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
+        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -123,59 +142,61 @@ export default function VoiceInterface() {
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
+      audioRef.current = audio;
 
       setState("speaking");
       audio.onended = () => setState("idle");
       audio.onerror = () => setState("idle");
       await audio.play();
-    } catch {
+    } catch (e: any) {
+      if (e?.name === "AbortError") return;
       setState("idle");
+    } finally {
+      clearTimeout(timeout);
     }
   }
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }
+  const isBusy = state === "thinking" || state === "speaking";
 
   return (
-    <main className="flex h-screen flex-col items-center justify-between bg-ink-900 px-6 py-8">
-      <div className="flex w-full items-center justify-between">
-        <span className="font-nastaliq text-xl text-sepia-200">هدایت</span>
-        <button
-          onClick={handleSignOut}
-          className="text-xs text-sepia-100/50 hover:text-sepia-200"
-        >
-          خروج
-        </button>
-      </div>
+    <>
+      <AppHeader />
+      <main className="flex min-h-screen flex-col items-center justify-between bg-[var(--bg)] px-6 pb-8 pt-20">
+        <p className="max-w-xs text-center text-xs text-[var(--text-muted)]">
+          {INTRO_NOTE}
+        </p>
 
-      <p className="max-w-xs text-center text-xs text-sepia-100/40">
-        {INTRO_NOTE}
-      </p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-6">
+          <button
+            onClick={handleMicPress}
+            disabled={isBusy}
+            className="flex h-32 w-32 items-center justify-center rounded-full border-2 border-sepia-400/50 bg-[var(--bg-elevated)] transition disabled:opacity-60"
+            aria-label="شروع یا پایان صحبت"
+          >
+            <BigOwlMark state={state} />
+          </button>
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-6">
-        <button
-          onClick={handleMicPress}
-          disabled={state === "thinking" || state === "speaking"}
-          className="flex h-32 w-32 items-center justify-center rounded-full border-2 border-sepia-400/50 bg-ink-800 transition disabled:opacity-60"
-          aria-label="شروع یا پایان صحبت"
-        >
-          <BigOwlMark state={state} />
-        </button>
+          <p className="text-sm text-[var(--text-muted)]">{stateLabel(state)}</p>
 
-        <p className="text-sm text-sepia-100/60">{stateLabel(state)}</p>
+          {isBusy && (
+            <button
+              onClick={resetToIdle}
+              className="rounded-full border border-sepia-400/40 px-4 py-1.5 text-xs text-sepia-300"
+            >
+              لغو
+            </button>
+          )}
 
-        {errorMsg && (
-          <p className="max-w-xs text-center text-sm text-red-400" role="alert">
-            {errorMsg}
-          </p>
-        )}
-      </div>
+          {errorMsg && (
+            <p className="max-w-xs text-center text-sm text-red-400" role="alert">
+              {errorMsg}
+            </p>
+          )}
+        </div>
 
-      <div className="h-4" />
-    </main>
+        <div className="h-4" />
+      </main>
+    </>
   );
 }
 
