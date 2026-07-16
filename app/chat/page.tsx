@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import ChatWindow from "@/components/ChatWindow";
+import VoiceInterface from "@/components/VoiceInterface";
 
 export default async function ChatPage() {
   const supabase = createClient();
@@ -12,5 +12,5 @@ export default async function ChatPage() {
     redirect("/login");
   }
 
-  return <ChatWindow />;
+  return <VoiceInterface />;
 }
