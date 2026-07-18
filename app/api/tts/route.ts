@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
+import { EdgeTTS } from "edge-tts-universal";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,19 +18,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "متن نامعتبر است." }, { status: 400 });
     }
 
-    const tts = new MsEdgeTTS();
-    await tts.setMetadata(
-      "fa-IR-FaridNeural",
-      OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3
-    );
-
-    const { audioStream } = await tts.toStream(text);
-
-    const chunks: Buffer[] = [];
-    for await (const chunk of audioStream) {
-      chunks.push(chunk as Buffer);
-    }
-    const audioBuffer = Buffer.concat(chunks);
+    const tts = new EdgeTTS(text, "fa-IR-FaridNeural");
+    const result = await tts.synthesize();
+    const audioBuffer = Buffer.from(await result.audio.arrayBuffer());
 
     return new NextResponse(audioBuffer, {
       headers: { "Content-Type": "audio/mpeg" },
