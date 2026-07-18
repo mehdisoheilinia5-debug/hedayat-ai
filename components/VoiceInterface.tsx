@@ -178,7 +178,7 @@ export default function VoiceInterface() {
             }`}
             aria-label="شروع یا پایان صحبت"
           >
-            <HedayatMark size={90} blinking={blinking} className="text-[var(--text)]" />
+            <HedayatMark size={70} blinking={blinking} className="text-[var(--text-muted)]" />
           </button>
 
           <p className="text-sm text-[var(--text-muted)]">{stateLabel(state)}</p>
