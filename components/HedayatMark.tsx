@@ -17,58 +17,84 @@ export default function HedayatMark({
       className={className}
       aria-hidden="true"
     >
-      {/* عینک گرد */}
-      <circle cx="40" cy="40" r="22" stroke="currentColor" strokeWidth="4" fill="none" />
-      <circle cx="80" cy="40" r="22" stroke="currentColor" strokeWidth="4" fill="none" />
-
-      {/* اتصال وسط عینک */}
-      <line
-        x1="62"
-        y1="38"
-        x2="58"
-        y2="38"
-        stroke="currentColor"
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
+      <defs>
+        <filter id="hedayat-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1" stdDeviation="0.6" floodOpacity="0.25" />
+        </filter>
+      </defs>
 
       {/* دسته‌های عینک */}
-      <line
-        x1="18"
-        y1="40"
-        x2="8"
-        y2="35"
+      <path
+        d="M16 38 Q6 34 4 30"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="3.5"
         strokeLinecap="round"
-        opacity="0.6"
+        fill="none"
+        opacity="0.55"
       />
-      <line
-        x1="102"
-        y1="40"
-        x2="112"
-        y2="35"
+      <path
+        d="M104 38 Q114 34 116 30"
         stroke="currentColor"
-        strokeWidth="3"
+        strokeWidth="3.5"
         strokeLinecap="round"
-        opacity="0.6"
+        fill="none"
+        opacity="0.55"
       />
 
-      {/* چشم‌ها (چشمک‌زن) */}
+      {/* قاب عینک — دو لایه برای حس حجم */}
       <circle
         cx="40"
         cy="40"
-        r="5"
-        fill="currentColor"
-        className={blinking ? "blink-el" : ""}
+        r="23"
+        stroke="currentColor"
+        strokeWidth="5.5"
+        strokeLinejoin="round"
+        fill="none"
+        filter="url(#hedayat-shadow)"
       />
       <circle
         cx="80"
         cy="40"
-        r="5"
-        fill="currentColor"
-        className={blinking ? "blink-el" : ""}
+        r="23"
+        stroke="currentColor"
+        strokeWidth="5.5"
+        strokeLinejoin="round"
+        fill="none"
+        filter="url(#hedayat-shadow)"
       />
+      <circle cx="40" cy="40" r="23" stroke="currentColor" strokeWidth="1" opacity="0.3" fill="none" />
+      <circle cx="80" cy="40" r="23" stroke="currentColor" strokeWidth="1" opacity="0.3" fill="none" />
+
+      {/* پل عینک */}
+      <path
+        d="M63 36 Q60 40 57 36"
+        stroke="currentColor"
+        strokeWidth="5.5"
+        strokeLinecap="round"
+        fill="none"
+      />
+
+      {/* چشم‌ها */}
+      <g style={{ transformBox: "fill-box", transformOrigin: "center" }}>
+        <circle
+          cx="40"
+          cy="40"
+          r="6"
+          fill="currentColor"
+          className={blinking ? "blink-el" : ""}
+          style={{ transformBox: "fill-box", transformOrigin: "center" }}
+        />
+      </g>
+      <g style={{ transformBox: "fill-box", transformOrigin: "center" }}>
+        <circle
+          cx="80"
+          cy="40"
+          r="6"
+          fill="currentColor"
+          className={blinking ? "blink-el" : ""}
+          style={{ transformBox: "fill-box", transformOrigin: "center" }}
+        />
+      </g>
     </svg>
   );
 }
