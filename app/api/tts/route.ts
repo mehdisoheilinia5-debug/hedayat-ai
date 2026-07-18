@@ -1,6 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { EdgeTTS } from "edge-tts-universal";
+
+const MAX_CHUNK_LENGTH = 190;
+
+function splitIntoChunks(text: string): string[] {
+  const sentences = text.split(/(?<=[.!?؟۔])\s+/);
+  const chunks: string[] = [];
+  let current = "";
+
+  for (const sentence of sentences) {
+    if ((current + " " + sentence).trim().length > MAX_CHUNK_LENGTH) {
+      if (current.trim()) chunks.push(current.trim());
+      current = sentence;
+    } else {
+      current = (current + " " + sentence).trim();
+    }
+  }
+  if (current.trim()) chunks.push(current.trim());
+
+  return chunks.length > 0 ? chunks : [text.slice(0, MAX_CHUNK_LENGTH)];
+}
+
+async function fetchChunkAudio(chunk: string): Promise<ArrayBuffer> {
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(
+    chunk
+  )}&tl=fa&client=tw-ob`;
+
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Google TTS chunk failed: ${res.status}`);
+  }
+
+  return res.arrayBuffer();
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,11 +56,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "متن نامعتبر است." }, { status: 400 });
     }
 
-    const tts = new EdgeTTS(text, "fa-IR-FaridNeural");
-    const result = await tts.synthesize();
-    const audioBuffer = Buffer.from(await result.audio.arrayBuffer());
+    const chunks = splitIntoChunks(text);
+    const audioBuffers: Buffer[] = [];
 
-    return new NextResponse(audioBuffer, {
+    for (const chunk of chunks) {
+      const buf = await fetchChunkAudio(chunk);
+      audioBuffers.push(Buffer.from(buf));
+    }
+
+    const finalAudio = Buffer.concat(audioBuffers);
+
+    return new NextResponse(finalAudio, {
       headers: { "Content-Type": "audio/mpeg" },
     });
   } catch (error) {
