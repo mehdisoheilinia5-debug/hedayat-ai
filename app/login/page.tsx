@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import HedayatMark from "@/components/HedayatMark";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -45,17 +46,18 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-ink-900 px-6">
-      <div className="mb-8 text-center">
-        <h1 className="font-nastaliq text-4xl text-sepia-200">هدایت</h1>
-        <p className="mt-2 text-sm text-sepia-100/70">
+    <main className="flex h-[100dvh] flex-col items-center justify-center overflow-hidden bg-[var(--bg)] px-6">
+      <div className="mb-8 flex flex-col items-center text-center">
+        <HedayatMark size={56} className="mb-3 text-[var(--text)]" />
+        <h1 className="font-nastaliq text-4xl text-[var(--text)]">هدایت</h1>
+        <p className="mt-2 text-sm text-[var(--text-muted)]">
           گفتگوی هنری و ادبی با بازآفرینی صادق هدایت
         </p>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm rounded-lg border border-sepia-500/20 bg-ink-800 p-6"
+        className="w-full max-w-sm rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] p-6"
       >
         <div className="mb-4 flex gap-2 text-sm">
           <button
@@ -63,8 +65,8 @@ export default function LoginPage() {
             onClick={() => setMode("login")}
             className={`flex-1 rounded py-2 transition ${
               mode === "login"
-                ? "bg-sepia-500/20 text-sepia-200"
-                : "text-sepia-100/50"
+                ? "bg-black/10 text-[var(--text)] dark:bg-white/10"
+                : "text-[var(--text-muted)]"
             }`}
           >
             ورود
@@ -74,25 +76,25 @@ export default function LoginPage() {
             onClick={() => setMode("signup")}
             className={`flex-1 rounded py-2 transition ${
               mode === "signup"
-                ? "bg-sepia-500/20 text-sepia-200"
-                : "text-sepia-100/50"
+                ? "bg-black/10 text-[var(--text)] dark:bg-white/10"
+                : "text-[var(--text-muted)]"
             }`}
           >
             ثبت‌نام
           </button>
         </div>
 
-        <label className="mb-1 block text-xs text-sepia-100/60">ایمیل</label>
+        <label className="mb-1 block text-xs text-[var(--text-muted)]">ایمیل</label>
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mb-4 w-full rounded border border-sepia-500/30 bg-ink-900 px-3 py-2 text-sepia-100 outline-none focus:border-sepia-300"
+          className="mb-4 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-[var(--text)] outline-none focus:border-[var(--accent)]"
           placeholder="you@example.com"
         />
 
-        <label className="mb-1 block text-xs text-sepia-100/60">
+        <label className="mb-1 block text-xs text-[var(--text-muted)]">
           رمز عبور
         </label>
         <input
@@ -101,17 +103,17 @@ export default function LoginPage() {
           minLength={6}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mb-4 w-full rounded border border-sepia-500/30 bg-ink-900 px-3 py-2 text-sepia-100 outline-none focus:border-sepia-300"
+          className="mb-4 w-full rounded border border-[var(--border)] bg-[var(--bg)] px-3 py-2 text-[var(--text)] outline-none focus:border-[var(--accent)]"
           placeholder="••••••••"
         />
 
         {error && (
-          <p className="mb-3 text-sm text-red-400" role="alert">
+          <p className="mb-3 text-sm text-red-500" role="alert">
             {error}
           </p>
         )}
         {message && (
-          <p className="mb-3 text-sm text-sepia-200" role="status">
+          <p className="mb-3 text-sm text-[var(--text)]" role="status">
             {message}
           </p>
         )}
@@ -119,7 +121,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded bg-sepia-400 py-2 font-medium text-ink-900 transition hover:bg-sepia-300 disabled:opacity-50"
+          className="w-full rounded bg-[var(--text)] py-2 font-medium text-[var(--bg)] transition disabled:opacity-50"
         >
           {loading ? "لطفاً صبر کن..." : mode === "login" ? "ورود" : "ثبت‌نام"}
         </button>
