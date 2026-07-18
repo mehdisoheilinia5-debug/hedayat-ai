@@ -42,23 +42,24 @@ html {
   font-family: "Noto Nastaliq Urdu", serif;
 }
 
-@keyframes hedayat-blink {
-  0%, 88%, 100% { transform: scaleY(1); }
-  94% { transform: scaleY(0.1); }
+@keyframes blink-toggle {
+  0%, 40% { opacity: 1; }
+  50%, 90% { opacity: 0.15; }
+  100% { opacity: 1; }
 }
 
-.blink-el {
-  animation: hedayat-blink 2.4s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
+.blink-a {
+  animation: blink-toggle 2.2s ease-in-out infinite;
 }
 
-.blink-el:nth-child(1) {
-  animation-delay: 0s;
+.blink-b {
+  animation: blink-toggle 2.2s ease-in-out infinite;
+  animation-delay: 1.1s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .blink-el {
+  .blink-a,
+  .blink-b {
     animation: none;
   }
 }
