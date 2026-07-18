@@ -4,11 +4,9 @@ export default function AboutPage() {
   return (
     <>
       <AppHeader />
-      <main className="min-h-screen bg-[var(--bg)] px-6 pb-12 pt-20 text-[var(--text)]">
+      <main className="h-[100dvh] overflow-y-auto bg-[var(--bg)] px-6 pb-12 pt-20 text-[var(--text)]">
         <div className="mx-auto max-w-xl">
-          <h1 className="font-nastaliq mb-6 text-3xl text-sepia-300">
-            درباره‌ی هدایت AI
-          </h1>
+          <h1 className="font-nastaliq mb-6 text-3xl">درباره‌ی هدایت AI</h1>
           <p className="mb-4 leading-relaxed">
             هدایت AI یک بازسازی هنری و ادبی از صادق هدایت، نویسنده‌ی برجسته‌ی
             ایرانی، است. این ابزار برای گفتگوی صوتی با شخصیتی طراحی شده که بر
