@@ -5,50 +5,59 @@
 @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap");
 
 :root {
-  --bg: #f7f1e3;
-  --bg-elevated: #ede0c8;
-  --text: #2a1f13;
-  --text-muted: rgba(42, 31, 19, 0.55);
-  --border: rgba(138, 102, 54, 0.3);
+  --bg: #f2f2f3;
+  --bg-elevated: #ffffff;
+  --text: #18181b;
+  --text-muted: #52525b;
+  --border: #d4d4d8;
+  --accent: #3f3f46;
 }
 
 .dark {
-  --bg: #0a0908;
-  --bg-elevated: #16140f;
-  --text: #ede0c8;
-  --text-muted: rgba(237, 224, 200, 0.5);
-  --border: rgba(138, 102, 54, 0.25);
+  --bg: #1c1c1f;
+  --bg-elevated: #27272a;
+  --text: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --border: #3f3f46;
+  --accent: #d4d4d8;
 }
 
-html {
-  direction: rtl;
+html, body {
+  height: 100%;
+  overscroll-behavior: none;
 }
 
 body {
   background-color: var(--bg);
   color: var(--text);
   font-family: "Vazirmatn", sans-serif;
+  overflow: hidden;
+}
+
+html {
+  direction: rtl;
 }
 
 .font-nastaliq {
   font-family: "Noto Nastaliq Urdu", serif;
 }
 
-@keyframes owl-blink {
+@keyframes hedayat-blink {
   0%, 100% { transform: scaleY(1); opacity: 1; }
   50% { transform: scaleY(0.15); opacity: 0.6; }
 }
 
-.owl-eye {
-  animation: owl-blink 1.6s ease-in-out infinite;
+.blink-el {
+  animation: hedayat-blink 1.6s ease-in-out infinite;
+  transform-origin: center;
 }
 
-.owl-eye:nth-child(2) {
+.blink-el:nth-child(4) {
   animation-delay: 0.15s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .owl-eye {
+  .blink-el {
     animation: none;
   }
 }
