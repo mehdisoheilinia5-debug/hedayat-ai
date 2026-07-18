@@ -11,90 +11,58 @@ export default function HedayatMark({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 120 80"
+      viewBox="0 0 120 60"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-hidden="true"
     >
-      <defs>
-        <filter id="hedayat-shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="1" stdDeviation="0.6" floodOpacity="0.25" />
-        </filter>
-      </defs>
-
       {/* دسته‌های عینک */}
       <path
-        d="M16 38 Q6 34 4 30"
+        d="M12 30 Q4 27 2 24"
         stroke="currentColor"
-        strokeWidth="3.5"
+        strokeWidth="3"
         strokeLinecap="round"
         fill="none"
-        opacity="0.55"
+        opacity="0.5"
       />
       <path
-        d="M104 38 Q114 34 116 30"
+        d="M108 30 Q116 27 118 24"
         stroke="currentColor"
-        strokeWidth="3.5"
+        strokeWidth="3"
         strokeLinecap="round"
         fill="none"
-        opacity="0.55"
+        opacity="0.5"
       />
 
-      {/* قاب عینک — دو لایه برای حس حجم */}
-      <circle
-        cx="40"
-        cy="40"
-        r="23"
-        stroke="currentColor"
-        strokeWidth="5.5"
-        strokeLinejoin="round"
-        fill="none"
-        filter="url(#hedayat-shadow)"
-      />
-      <circle
-        cx="80"
-        cy="40"
-        r="23"
-        stroke="currentColor"
-        strokeWidth="5.5"
-        strokeLinejoin="round"
-        fill="none"
-        filter="url(#hedayat-shadow)"
-      />
-      <circle cx="40" cy="40" r="23" stroke="currentColor" strokeWidth="1" opacity="0.3" fill="none" />
-      <circle cx="80" cy="40" r="23" stroke="currentColor" strokeWidth="1" opacity="0.3" fill="none" />
+      {/* قاب عینک */}
+      <circle cx="32" cy="30" r="20" stroke="currentColor" strokeWidth="4.5" fill="none" />
+      <circle cx="88" cy="30" r="20" stroke="currentColor" strokeWidth="4.5" fill="none" />
 
       {/* پل عینک */}
       <path
-        d="M63 36 Q60 40 57 36"
+        d="M56 28 Q60 32 64 28"
         stroke="currentColor"
-        strokeWidth="5.5"
+        strokeWidth="4.5"
         strokeLinecap="round"
         fill="none"
       />
 
-      {/* چشم‌ها */}
-      <g style={{ transformBox: "fill-box", transformOrigin: "center" }}>
-        <circle
-          cx="40"
-          cy="40"
-          r="6"
-          fill="currentColor"
-          className={blinking ? "blink-el" : ""}
-          style={{ transformBox: "fill-box", transformOrigin: "center" }}
-        />
-      </g>
-      <g style={{ transformBox: "fill-box", transformOrigin: "center" }}>
-        <circle
-          cx="80"
-          cy="40"
-          r="6"
-          fill="currentColor"
-          className={blinking ? "blink-el" : ""}
-          style={{ transformBox: "fill-box", transformOrigin: "center" }}
-        />
-      </g>
+      {/* چشم‌ها — یکی‌درمیون چشمک می‌زنن */}
+      <circle
+        cx="32"
+        cy="30"
+        r="6"
+        fill="currentColor"
+        className={blinking ? "blink-a" : ""}
+      />
+      <circle
+        cx="88"
+        cy="30"
+        r="6"
+        fill="currentColor"
+        className={blinking ? "blink-b" : ""}
+      />
     </svg>
   );
 }
