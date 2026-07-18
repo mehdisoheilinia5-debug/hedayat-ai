@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import HedayatMark from "@/components/HedayatMark";
 
 export default function AppHeader() {
   const router = useRouter();
@@ -39,11 +40,15 @@ export default function AppHeader() {
           aria-label="باز کردن منو"
           className="flex h-9 w-9 flex-col items-center justify-center gap-1"
         >
-          <span className="block h-0.5 w-6 bg-sepia-300" />
-          <span className="block h-0.5 w-6 bg-sepia-300" />
-          <span className="block h-0.5 w-6 bg-sepia-300" />
+          <span className="block h-0.5 w-6 bg-[var(--text)]" />
+          <span className="block h-0.5 w-6 bg-[var(--text)]" />
+          <span className="block h-0.5 w-6 bg-[var(--text)]" />
         </button>
-        <span className="font-nastaliq text-xl text-sepia-300">هدایت AI</span>
+
+        <div className="flex items-center gap-2">
+          <span className="font-nastaliq text-xl text-[var(--text)]">هدایت AI</span>
+          <HedayatMark size={26} className="text-[var(--text)]" />
+        </div>
       </header>
 
       {menuOpen && (
@@ -68,21 +73,28 @@ export default function AppHeader() {
         <Link
           href="/chat"
           onClick={() => setMenuOpen(false)}
-          className="rounded px-3 py-2 text-[var(--text)] hover:bg-sepia-500/10"
+          className="rounded px-3 py-2 text-[var(--text)] hover:bg-black/5 dark:hover:bg-white/5"
         >
           گفتگو
         </Link>
         <Link
+          href="/profile"
+          onClick={() => setMenuOpen(false)}
+          className="rounded px-3 py-2 text-[var(--text)] hover:bg-black/5 dark:hover:bg-white/5"
+        >
+          پروفایل
+        </Link>
+        <Link
           href="/about"
           onClick={() => setMenuOpen(false)}
-          className="rounded px-3 py-2 text-[var(--text)] hover:bg-sepia-500/10"
+          className="rounded px-3 py-2 text-[var(--text)] hover:bg-black/5 dark:hover:bg-white/5"
         >
           درباره‌ی برنامه
         </Link>
 
         <button
           onClick={toggleTheme}
-          className="mt-2 rounded px-3 py-2 text-right text-[var(--text)] hover:bg-sepia-500/10"
+          className="mt-2 rounded px-3 py-2 text-right text-[var(--text)] hover:bg-black/5 dark:hover:bg-white/5"
         >
           {isDark ? "☀️ تم روشن" : "🌙 تم تیره"}
         </button>
@@ -90,7 +102,7 @@ export default function AppHeader() {
         <div className="mt-auto">
           <button
             onClick={handleSignOut}
-            className="w-full rounded px-3 py-2 text-right text-red-400 hover:bg-red-500/10"
+            className="w-full rounded px-3 py-2 text-right text-red-500 hover:bg-red-500/10"
           >
             خروج از حساب
           </button>
