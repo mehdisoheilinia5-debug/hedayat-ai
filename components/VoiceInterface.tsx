@@ -20,10 +20,12 @@ export default function VoiceInterface() {
   const historyRef = useRef<ChatMessage[]>([]);
   const recognitionRef = useRef<any>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const resetToIdle = useCallback(() => {
     abortRef.current?.abort();
-    window.speechSynthesis?.cancel();
+    audioRef.current?.pause();
+    audioRef.current = null;
     setErrorMsg(null);
     setState("idle");
   }, []);
@@ -109,38 +111,50 @@ export default function VoiceInterface() {
         { role: "assistant", content: data.reply },
       ];
 
-      speak(data.reply);
+      await playVoice(data.reply);
     } catch (e: any) {
       if (e?.name === "AbortError") return;
-      setErrorMsg("ارتباط با سرور برقرار نشد یا زمان زیادی طول کشید (سرویس رایگان ممکنه در حال بیدار شدن باشه).");
+      setErrorMsg("ارتباط با سرور برقرار نشد یا زمان زیادی طول کشید.");
       setState("error");
     } finally {
       clearTimeout(timeout);
     }
   }
 
-  function speak(text: string) {
-    if (!window.speechSynthesis) {
+  async function playVoice(text: string) {
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const timeout = setTimeout(() => controller.abort(), 60000);
+
+    try {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        setErrorMsg("خطا در تولید صدا.");
+        setState("error");
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+
+      setState("speaking");
+      audio.onended = () => setState("idle");
+      audio.onerror = () => setState("idle");
+      await audio.play();
+    } catch (e: any) {
+      if (e?.name === "AbortError") return;
       setState("idle");
-      return;
+    } finally {
+      clearTimeout(timeout);
     }
-
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "fa-IR";
-    utterance.rate = 0.95;
-    utterance.pitch = 0.85;
-
-    const voices = window.speechSynthesis.getVoices();
-    const faVoice = voices.find((v) => v.lang?.toLowerCase().startsWith("fa"));
-    if (faVoice) utterance.voice = faVoice;
-
-    utterance.onstart = () => setState("speaking");
-    utterance.onend = () => setState("idle");
-    utterance.onerror = () => setState("idle");
-
-    window.speechSynthesis.speak(utterance);
   }
 
   const isBusy = state === "thinking" || state === "speaking";
