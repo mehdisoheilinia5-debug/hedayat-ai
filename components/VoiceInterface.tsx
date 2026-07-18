@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import AppHeader from "@/components/AppHeader";
+import HedayatMark from "@/components/HedayatMark";
 
 const INTRO_NOTE =
   "این یک بازسازی هنری بر پایه‌ی آثار و زندگی‌نامه‌ی صادق هدایت است، نه ادعای هویت واقعی او.";
@@ -158,11 +159,12 @@ export default function VoiceInterface() {
   }
 
   const isBusy = state === "thinking" || state === "speaking";
+  const blinking = state === "thinking" || state === "speaking";
 
   return (
     <>
       <AppHeader />
-      <main className="flex min-h-screen flex-col items-center justify-between bg-[var(--bg)] px-6 pb-8 pt-20">
+      <main className="flex h-[100dvh] flex-col items-center justify-between overflow-hidden bg-[var(--bg)] px-6 pb-8 pt-20">
         <p className="max-w-xs text-center text-xs text-[var(--text-muted)]">
           {INTRO_NOTE}
         </p>
@@ -171,10 +173,12 @@ export default function VoiceInterface() {
           <button
             onClick={handleMicPress}
             disabled={isBusy}
-            className="flex h-32 w-32 items-center justify-center rounded-full border-2 border-sepia-400/50 bg-[var(--bg-elevated)] transition disabled:opacity-60"
+            className={`flex h-36 w-36 items-center justify-center rounded-full border-2 border-[var(--border)] bg-[var(--bg-elevated)] transition disabled:opacity-60 ${
+              state === "listening" ? "animate-pulse" : ""
+            }`}
             aria-label="شروع یا پایان صحبت"
           >
-            <BigOwlMark state={state} />
+            <HedayatMark size={90} blinking={blinking} className="text-[var(--text)]" />
           </button>
 
           <p className="text-sm text-[var(--text-muted)]">{stateLabel(state)}</p>
@@ -182,14 +186,14 @@ export default function VoiceInterface() {
           {isBusy && (
             <button
               onClick={resetToIdle}
-              className="rounded-full border border-sepia-400/40 px-4 py-1.5 text-xs text-sepia-300"
+              className="rounded-full border border-[var(--border)] px-4 py-1.5 text-xs text-[var(--text)]"
             >
               لغو
             </button>
           )}
 
           {errorMsg && (
-            <p className="max-w-xs text-center text-sm text-red-400" role="alert">
+            <p className="max-w-xs text-center text-sm text-red-500" role="alert">
               {errorMsg}
             </p>
           )}
@@ -214,27 +218,4 @@ function stateLabel(state: VoiceState) {
     default:
       return "برای صحبت لمس کن";
   }
-}
-
-function BigOwlMark({ state }: { state: VoiceState }) {
-  const pulsing = state === "listening";
-  const blinking = state === "thinking" || state === "speaking";
-
-  return (
-    <div
-      className={`flex gap-3 ${pulsing ? "animate-pulse" : ""}`}
-      aria-hidden="true"
-    >
-      <span
-        className={`h-4 w-6 rounded-full bg-sepia-300 ${
-          blinking ? "owl-eye" : ""
-        }`}
-      />
-      <span
-        className={`h-4 w-6 rounded-full bg-sepia-300 ${
-          blinking ? "owl-eye" : ""
-        }`}
-      />
-    </div>
-  );
 }
