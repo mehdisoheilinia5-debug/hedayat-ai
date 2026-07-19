@@ -161,6 +161,9 @@ export default function VoiceInterface() {
   const isBusy = state === "thinking" || state === "speaking";
   const blinking = state === "thinking" || state === "speaking";
 
+  const glowClass =
+    state === "listening" ? "glow-listen" : state === "speaking" ? "glow-speak" : "";
+
   return (
     <>
       <AppHeader />
@@ -173,9 +176,7 @@ export default function VoiceInterface() {
           <button
             onClick={handleMicPress}
             disabled={isBusy}
-            className={`flex h-36 w-36 items-center justify-center rounded-full border-2 border-[var(--border)] bg-[var(--bg-elevated)] transition disabled:opacity-60 ${
-              state === "listening" ? "animate-pulse" : ""
-            }`}
+            className={`flex h-36 w-36 items-center justify-center rounded-full border-2 border-[var(--border)] bg-[var(--bg-elevated)] transition disabled:opacity-100 ${glowClass}`}
             aria-label="شروع یا پایان صحبت"
           >
             <HedayatMark size={70} blinking={blinking} className="text-[var(--text-muted)]" />
