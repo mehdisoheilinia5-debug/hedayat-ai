@@ -3,13 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildHedayatMessages, type ChatMessage } from "@/lib/hedayat-persona";
 
-// این مدل رایگان OpenRouter‌ه؛ اگه در دسترس نبود از openrouter.ai/models
-// یه مدل رایگان دیگه (تگ free) جایگزینش کن
 const OPENROUTER_MODEL = "openrouter/free";
 
 export async function POST(req: NextRequest) {
   try {
-    // بررسی احراز هویت کاربر
     const supabase = createClient();
     const {
       data: { user },
@@ -47,8 +44,8 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           model: OPENROUTER_MODEL,
           messages,
-          temperature: 0.8,
-          max_tokens: 800,
+          temperature: 0.7,
+          max_tokens: 1500,
         }),
       }
     );
