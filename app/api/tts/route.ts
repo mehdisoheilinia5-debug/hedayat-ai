@@ -18,7 +18,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "متن نامعتبر است." }, { status: 400 });
     }
 
-    const tts = new EdgeTTS(text, "fa-IR-FaridNeural");
+    const tts = new EdgeTTS(text, "fa-IR-FaridNeural", {
+      rate: "-12%",
+      volume: "+0%",
+      pitch: "+0Hz",
+    });
     const result = await tts.synthesize();
     const audioBuffer = Buffer.from(await result.audio.arrayBuffer());
 
