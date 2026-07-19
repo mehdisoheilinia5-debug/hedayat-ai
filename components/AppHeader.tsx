@@ -11,12 +11,27 @@ export default function AppHeader() {
   const supabase = createClient();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
+  const [email, setEmail] = useState("");
+  const [displayName, setDisplayName] = useState("");
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
     const dark = stored ? stored === "dark" : true;
     setIsDark(dark);
   }, []);
+
+  useEffect(() => {
+    async function loadUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        setEmail(user.email || "");
+        setDisplayName((user.user_metadata?.display_name as string) || "");
+      }
+    }
+    if (menuOpen) loadUser();
+  }, [menuOpen, supabase]);
 
   function toggleTheme() {
     const next = !isDark;
@@ -71,18 +86,22 @@ export default function AppHeader() {
         </button>
 
         <Link
+          href="/profile"
+          onClick={() => setMenuOpen(false)}
+          className="mb-4 flex flex-col gap-0.5 rounded-lg border border-[var(--border)] px-3 py-3 hover:bg-black/5 dark:hover:bg-white/5"
+        >
+          <span className="text-sm font-medium text-[var(--text)]">
+            {displayName || "کاربر هدایت AI"}
+          </span>
+          <span className="truncate text-xs text-[var(--text-muted)]">{email}</span>
+        </Link>
+
+        <Link
           href="/chat"
           onClick={() => setMenuOpen(false)}
           className="rounded px-3 py-2 text-[var(--text)] hover:bg-black/5 dark:hover:bg-white/5"
         >
           گفتگو
-        </Link>
-        <Link
-          href="/profile"
-          onClick={() => setMenuOpen(false)}
-          className="rounded px-3 py-2 text-[var(--text)] hover:bg-black/5 dark:hover:bg-white/5"
-        >
-          پروفایل
         </Link>
         <Link
           href="/about"
